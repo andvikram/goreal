@@ -1,15 +1,13 @@
 # GoReal
 
-Simplify PubSub. 
-
-This project uses Websocket and Apache Pulsar.
+An application to simplify PubSub using [Websocket](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API) and [Apache Pulsar](http://pulsar.apache.org)
 
 ## Getting Started
 
 Fire up Pulsar with Docker:
 
 ```
-docker run --rm -it \
+docker run -it \
   -p 6650:6650 \
   -p 8080:8080 \
   --mount source=pulsardata,target=/pulsar/data \
