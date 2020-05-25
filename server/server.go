@@ -40,14 +40,14 @@ func Start(env string) {
 	initDSVars()
 	service.Initialize()
 
-	servConns := make(chan struct{})
+	servCon := make(chan struct{})
 	go func() {
 		sigint := make(chan os.Signal, 1)
 		signal.Notify(sigint, os.Interrupt)
 		<-sigint
 
 		// Received an interrupt signal, shut down.
-		shutdownConnections(servConns)
+		closeConnections(servCon)
 		shutdownServer()
 	}()
 
@@ -73,17 +73,18 @@ func Start(env string) {
 			"event": "server.Start()",
 			"error": err,
 		}).Error("Error starting server")
-		shutdownConnections(servConns)
+		closeConnections(servCon)
 	}
 
-	<-servConns
+	<-servCon
 }
 
-func shutdownConnections(servConns chan struct{}) {
+func closeConnections(servCon chan struct{}) {
+	fmt.Print("\nClosing connections ...\n\n")
 	service.Discontinue = true
 	ds.CloseDS()
 	logger.Stop()
-	close(servConns)
+	close(servCon)
 }
 
 func shutdownServer() {

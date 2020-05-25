@@ -2,7 +2,6 @@ package controller
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/andvikram/goreal/app/api"
@@ -15,8 +14,6 @@ import (
 
 // SubscribeTopic opens a websocket connection for the peer
 func SubscribeTopic(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("\n @@@ Executing SubscribeTopic() ...")
-
 	// Upgrade initial GET request to websocket
 	upgrader := websocket.Upgrader{
 		ReadBufferSize:  50000,
