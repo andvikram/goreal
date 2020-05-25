@@ -8,7 +8,6 @@ import (
 // GoRealDS ...
 type GoRealDS struct {
 	PulsarDS pulsar.Client
-	Env      string
 }
 
 const (
@@ -21,16 +20,13 @@ var (
 	DSName string
 	// DSUrl ...
 	DSUrl string
-	// Env ...
-	Env string
-	log = logger.GoRealLog{}
-	err error
+	log   = logger.GoRealLog{}
+	err   error
 )
 
 // NewGoRealDS ...
 func NewGoRealDS() *GoRealDS {
 	grds := new(GoRealDS)
-	grds.Env = Env
 	switch DSName {
 	case PulsarDS:
 		grds.PulsarDS, err = NewPulsarDS(DSUrl)

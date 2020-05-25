@@ -24,11 +24,10 @@ var (
 	err         error
 )
 
-// NewGoReal ...
-func NewGoReal() *GoReal {
-	gr := new(GoReal)
-	gr.GoRealOp = op.NewGoRealOp()
-	return gr
+// Initialize ...
+func Initialize() {
+	GR = new(GoReal)
+	GR.GoRealOp = op.NewGoRealOp()
 }
 
 // GoRealService defines the interfaces for the service

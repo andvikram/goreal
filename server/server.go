@@ -38,7 +38,7 @@ func Start(env string) {
 
 	// Initiate service
 	initDSVars()
-	service.GR = service.NewGoReal()
+	service.Initialize()
 
 	servConns := make(chan struct{})
 	go func() {
@@ -99,7 +99,6 @@ func shutdownServer() {
 }
 
 func initDSVars() {
-	ds.Env = configuration.Config.Environment
 	ds.DSName = configuration.Config.Datasink
 	ds.DSUrl = configuration.Config.DatasinkURL
 }
