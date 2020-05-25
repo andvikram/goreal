@@ -15,6 +15,12 @@ type GoReal struct {
 	GoRealOp *op.GoRealOp
 }
 
+// GoRealService defines the interfaces for the service
+type GoRealService interface {
+	SubscribeTopic(*websocket.Conn)
+	PublishToTopic(*api.PublishToTopicRequest) *api.PublishToTopicResponse
+}
+
 var (
 	// GR is the service interface for GoReal
 	GR *GoReal
@@ -28,12 +34,6 @@ var (
 func Initialize() {
 	GR = new(GoReal)
 	GR.GoRealOp = op.NewGoRealOp()
-}
-
-// GoRealService defines the interfaces for the service
-type GoRealService interface {
-	SubscribeTopic(*websocket.Conn)
-	PublishToTopic(*api.PublishToTopicRequest) *api.PublishToTopicResponse
 }
 
 // SubscribeTopic ...
