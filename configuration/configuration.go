@@ -75,7 +75,7 @@ func initVars() {
 	case Config.AppHost == "":
 		panic("Environment variable APPLICATION.HOST not set")
 	case Config.LogLevel == "":
-		panic("Environment variable APPLICATION.LOG_LEVEL not set")
+		Config.LogLevel = "debug"
 	case Config.LogFilePath == "":
 		panic("Environment variable APPLICATION.LOG_FILE_PATH not set")
 	case Config.AppScheme == "https" && Config.CertFilePath == "":
