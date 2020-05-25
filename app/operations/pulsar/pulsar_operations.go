@@ -5,13 +5,13 @@ import (
 	"encoding/json"
 
 	"github.com/andvikram/goreal/app/model"
-	"github.com/andvikram/goreal/ds"
+	"github.com/andvikram/goreal/mb"
 	"github.com/apache/pulsar-client-go/pulsar"
 )
 
 // Op ...
 type Op struct {
-	GoRealDS *ds.GoRealDS
+	GoRealMB *mb.GoRealMB
 }
 
 var (
@@ -22,7 +22,7 @@ var (
 // NewOp ...
 func NewOp() *Op {
 	op := new(Op)
-	op.GoRealDS = ds.NewGoRealDS()
+	op.GoRealMB = mb.NewGoRealMB()
 	return op
 }
 
@@ -61,7 +61,7 @@ func (rOp *Op) Receive() (*model.Message, error) {
 // InitProducer ...
 func (rOp *Op) InitProducer(topicID string) error {
 	var err error
-	client := rOp.GoRealDS.PulsarDS
+	client := rOp.GoRealMB.PulsarMB
 	if producer != nil {
 		return nil
 	}
@@ -79,7 +79,7 @@ func (rOp *Op) CloseProducer() {
 // InitConsumer ...
 func (rOp *Op) InitConsumer(topicID, peer string) error {
 	var err error
-	client := rOp.GoRealDS.PulsarDS
+	client := rOp.GoRealMB.PulsarMB
 	if consumer != nil {
 		if consumer.Subscription() == "subcriptionName-"+peer {
 			return nil

@@ -18,17 +18,17 @@ const (
 )
 
 type conf struct {
-	Environment  string
-	Origin       string
-	Datasink     string
-	DatasinkURL  string
-	AppScheme    string
-	AppHost      string
-	AppPort      string
-	LogLevel     string
-	LogFilePath  string
-	CertFilePath string
-	KeyFilePath  string
+	Environment   string
+	Origin        string
+	MessageBus    string
+	MessageBusURL string
+	AppScheme     string
+	AppHost       string
+	AppPort       string
+	LogLevel      string
+	LogFilePath   string
+	CertFilePath  string
+	KeyFilePath   string
 }
 
 var (
@@ -50,8 +50,8 @@ func Initialize() {
 func initVars() {
 	Config.Environment = viper.GetString("ENVIRONMENT")
 	Config.Origin = viper.GetString("ORIGIN")
-	Config.Datasink = viper.GetString("DATASINK")
-	Config.DatasinkURL = viper.GetString("DATASINK_URL")
+	Config.MessageBus = viper.GetString("MESSAGE_BUS")
+	Config.MessageBusURL = viper.GetString("MESSAGE_BUS_URL")
 	Config.AppScheme = viper.GetString("APPLICATION.SCHEME")
 	Config.AppHost = viper.GetString("APPLICATION.HOST")
 	Config.AppPort = viper.GetString("APPLICATION.PORT")
@@ -66,10 +66,10 @@ func initVars() {
 		panic("Environment variable ENVIRONMENT not set")
 	case Config.Origin == "":
 		panic("Environment variable ORIGIN not set")
-	case Config.Datasink == "":
-		panic("Environment variable DATASINK not set")
-	case Config.DatasinkURL == "":
-		panic("Environment variable DATASINK_URL not set")
+	case Config.MessageBus == "":
+		panic("Environment variable MESSAGE_BUS not set")
+	case Config.MessageBusURL == "":
+		panic("Environment variable MESSAGE_BUS_URL not set")
 	case Config.AppScheme == "":
 		panic("Environment variable APPLICATION.SCHEME not set")
 	case Config.AppHost == "":

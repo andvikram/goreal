@@ -1,4 +1,4 @@
-package ds
+package mb
 
 import (
 	"sync"
@@ -11,11 +11,11 @@ var (
 	once   sync.Once
 )
 
-// NewPulsarDS ...
-func NewPulsarDS(dsURL string) (pulsar.Client, error) {
+// NewPulsarMB ...
+func NewPulsarMB(mbURL string) (pulsar.Client, error) {
 	once.Do(func() {
 		client, err = pulsar.NewClient(pulsar.ClientOptions{
-			URL: dsURL,
+			URL: mbURL,
 		})
 	})
 	if err != nil {
@@ -25,7 +25,7 @@ func NewPulsarDS(dsURL string) (pulsar.Client, error) {
 	return client, err
 }
 
-// ClosePulsarDS ...
-func ClosePulsarDS() {
+// ClosePulsarMB ...
+func ClosePulsarMB() {
 	client.Close()
 }

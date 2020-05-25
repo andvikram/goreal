@@ -40,8 +40,8 @@ Sample config file content:
 ## OIRIGIN should hold the address of the server
 ##  rendering the client that will connect with GoReal
 ORIGIN: http://localhost:4000
-DATASINK: pulsar
-DATASINK_URL: pulsar://localhost:6650
+MESSAGE_BUS: pulsar
+MESSAGE_BUS_URL: pulsar://localhost:6650
 
 APPLICATION:
   NAME: goreal
@@ -96,7 +96,7 @@ Use the `PublishToTopicRoute` endpoint to publish your message to the provided t
 SubscribeTopicRoute = "/subscribe"
 
 // PublishToTopicRoute defines HTTP path for publishing a message in a topic
-PublishToTopicRoute = "/topics/{topic_id}/messages/new"
+PublishToTopicRoute = "/topics/:topic_id/messages/new"
   
   Required POST data:
     { message: JSON.stringify(message) }

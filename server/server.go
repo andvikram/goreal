@@ -9,8 +9,8 @@ import (
 
 	"github.com/andvikram/goreal/app/service"
 	"github.com/andvikram/goreal/configuration"
-	"github.com/andvikram/goreal/ds"
 	"github.com/andvikram/goreal/logger"
+	"github.com/andvikram/goreal/mb"
 	"github.com/andvikram/goreal/routes"
 )
 
@@ -37,7 +37,7 @@ func Start(env string) {
 	}
 
 	// Initiate service
-	initDSVars()
+	initMBVars()
 	service.Initialize()
 
 	servCon := make(chan struct{})
@@ -82,7 +82,7 @@ func Start(env string) {
 func closeConnections(servCon chan struct{}) {
 	fmt.Print("\nClosing connections ...\n\n")
 	service.Discontinue = true
-	ds.CloseDS()
+	mb.CloseMB()
 	logger.Stop()
 	close(servCon)
 }
@@ -99,7 +99,7 @@ func shutdownServer() {
 	}
 }
 
-func initDSVars() {
-	ds.DSName = configuration.Config.Datasink
-	ds.DSUrl = configuration.Config.DatasinkURL
+func initMBVars() {
+	mb.MBName = configuration.Config.MessageBus
+	mb.MBUrl = configuration.Config.MessageBusURL
 }
