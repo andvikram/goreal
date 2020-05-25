@@ -64,15 +64,6 @@ func PublishToTopic(w http.ResponseWriter, r *http.Request) {
 	publishToTopicReq.TopicID = params["topic_id"]
 	publishToTopicReq.Message = body["message"]
 
-	// err := json.Unmarshal([]byte(params["meta_data"]), &publishToTopicReq.MetaData)
-	// if err != nil {
-	// 	log.WithFields(logger.Fields{
-	// 		"event": "controller.PublishToTopic()",
-	// 		"error": err,
-	// 	}).Error("Failed to unmarshal meta data")
-	// 	return
-	// }
-
 	response = service.GR.PublishToTopic(publishToTopicReq)
 	json.NewEncoder(w).Encode(response)
 }
