@@ -10,34 +10,38 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-// GoReal provides the type on which GoRealService interface is implemented
-type GoReal struct {
-	GoRealOp *op.GoRealOp
-}
-
-// GoRealService defines the interfaces for the service
+// GoRealService provides the interfaces for the GoReal service
 type GoRealService interface {
 	SubscribeTopic(*websocket.Conn)
 	PublishToTopic(*api.PublishToTopicRequest) *api.PublishToTopicResponse
 }
 
 var (
-	// GR is the service interface for GoReal
-	GR *GoReal
+	// GR is instance for the GoReal service interface
+	GR GoRealService
 	// Discontinue receiving messages
 	Discontinue = false
 	log         = logger.GoRealLog{}
 	err         error
 )
 
+type goReal struct {
+	op op.Operations
+}
+
 // Initialize ...
 func Initialize() {
-	GR = new(GoReal)
-	GR.GoRealOp = op.NewGoRealOp()
+	GR = newService()
+}
+
+func newService() GoRealService {
+	gr := new(goReal)
+	gr.op = op.NewGoRealOp()
+	return gr
 }
 
 // SubscribeTopic ...
-func (goReal *GoReal) SubscribeTopic(ws *websocket.Conn) {
+func (gr *goReal) SubscribeTopic(ws *websocket.Conn) {
 	defer ws.Close()
 
 	// Read the initial message to get info
@@ -67,8 +71,8 @@ func (goReal *GoReal) SubscribeTopic(ws *websocket.Conn) {
 		return
 	}
 
-	err = goReal.GoRealOp.InitConsumer(data["topicID"], data["peer"])
-	defer goReal.GoRealOp.CloseConsumer()
+	err = gr.op.InitConsumer(data["topicID"], data["peer"])
+	defer gr.op.CloseConsumer()
 	if err != nil {
 		log.WithFields(logger.Fields{
 			"event": "service.SubscribeTopic()",
@@ -78,7 +82,7 @@ func (goReal *GoReal) SubscribeTopic(ws *websocket.Conn) {
 	}
 
 	for {
-		message, err := goReal.GoRealOp.Receive()
+		message, err := gr.op.Receive()
 		if err != nil {
 			if !Discontinue {
 				log.WithFields(logger.Fields{
@@ -101,14 +105,14 @@ func (goReal *GoReal) SubscribeTopic(ws *websocket.Conn) {
 }
 
 // PublishToTopic ...
-func (goReal *GoReal) PublishToTopic(req *api.PublishToTopicRequest) *api.PublishToTopicResponse {
+func (gr *goReal) PublishToTopic(req *api.PublishToTopicRequest) *api.PublishToTopicResponse {
 	response := new(api.PublishToTopicResponse)
 
 	message := model.NewMessage()
 	message.Data = req.Message
 
-	err = goReal.GoRealOp.InitProducer(req.TopicID)
-	defer goReal.GoRealOp.CloseProducer()
+	err = gr.op.InitProducer(req.TopicID)
+	defer gr.op.CloseProducer()
 	if err != nil {
 		log.WithFields(logger.Fields{
 			"event": "service.PublishToTopic()",
@@ -119,7 +123,7 @@ func (goReal *GoReal) PublishToTopic(req *api.PublishToTopicRequest) *api.Publis
 		return response
 	}
 
-	err := goReal.GoRealOp.Send(message)
+	err := gr.op.Send(message)
 	if err != nil {
 		log.WithFields(logger.Fields{
 			"event": "service.PublishToTopic()",

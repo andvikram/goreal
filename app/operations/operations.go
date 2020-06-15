@@ -8,36 +8,39 @@ import (
 	"github.com/andvikram/goreal/mb"
 )
 
-// GoRealOp ...
-type GoRealOp struct {
-	PulsarOp *pulsar.Op
-	MBName   string
-}
-
 // Operations defines the methods for message bus operations
 type Operations interface {
-	Send(*model.Message, string) error
-	Receive(string, string) (*model.Message, error)
+	InitProducer(string) error
+	InitConsumer(string, string) error
+	Send(*model.Message) error
+	Receive() (*model.Message, error)
+	CloseProducer()
+	CloseConsumer()
 }
 
-var err error
+type goRealOp struct {
+	pulsar *pulsar.Op
+	mbName string
+}
 
-// NewGoRealOp ...
-func NewGoRealOp() *GoRealOp {
-	gro := new(GoRealOp)
-	gro.MBName = mb.MBName
-	switch gro.MBName {
+// NewGoRealOp returns the Operations interface type
+func NewGoRealOp() Operations {
+	gro := new(goRealOp)
+	gro.mbName = mb.MBName
+	switch gro.mbName {
 	case mb.PulsarMB:
-		gro.PulsarOp = pulsar.NewOp()
+		gro.pulsar = pulsar.NewOp()
 	}
 	return gro
 }
 
+var err error
+
 // Send ...
-func (gorealOp *GoRealOp) Send(message *model.Message) error {
-	switch gorealOp.MBName {
+func (op *goRealOp) Send(message *model.Message) error {
+	switch op.mbName {
 	case mb.PulsarMB:
-		err = gorealOp.PulsarOp.Send(message)
+		err = op.pulsar.Send(message)
 	default:
 		err = errors.New("unsupported sink")
 	}
@@ -45,11 +48,11 @@ func (gorealOp *GoRealOp) Send(message *model.Message) error {
 }
 
 // Receive ...
-func (gorealOp *GoRealOp) Receive() (*model.Message, error) {
+func (op *goRealOp) Receive() (*model.Message, error) {
 	var message *model.Message
-	switch gorealOp.MBName {
+	switch op.mbName {
 	case mb.PulsarMB:
-		message, err = gorealOp.PulsarOp.Receive()
+		message, err = op.pulsar.Receive()
 	default:
 		err = errors.New("unsupported sink")
 	}
@@ -57,10 +60,10 @@ func (gorealOp *GoRealOp) Receive() (*model.Message, error) {
 }
 
 // InitProducer ...
-func (gorealOp *GoRealOp) InitProducer(topicID string) error {
-	switch gorealOp.MBName {
+func (op *goRealOp) InitProducer(topicID string) error {
+	switch op.mbName {
 	case mb.PulsarMB:
-		err = gorealOp.PulsarOp.InitProducer(topicID)
+		err = op.pulsar.InitProducer(topicID)
 	default:
 		err = errors.New("unsupported sink")
 	}
@@ -68,20 +71,20 @@ func (gorealOp *GoRealOp) InitProducer(topicID string) error {
 }
 
 // CloseProducer ...
-func (gorealOp *GoRealOp) CloseProducer() {
-	switch gorealOp.MBName {
+func (op *goRealOp) CloseProducer() {
+	switch op.mbName {
 	case mb.PulsarMB:
-		gorealOp.PulsarOp.CloseProducer()
+		op.pulsar.CloseProducer()
 	default:
 		panic("unsupported sink")
 	}
 }
 
 // InitConsumer ...
-func (gorealOp *GoRealOp) InitConsumer(topicID, peer string) error {
-	switch gorealOp.MBName {
+func (op *goRealOp) InitConsumer(topicID, peer string) error {
+	switch op.mbName {
 	case mb.PulsarMB:
-		err = gorealOp.PulsarOp.InitConsumer(topicID, peer)
+		err = op.pulsar.InitConsumer(topicID, peer)
 	default:
 		err = errors.New("unsupported sink")
 	}
@@ -89,10 +92,10 @@ func (gorealOp *GoRealOp) InitConsumer(topicID, peer string) error {
 }
 
 // CloseConsumer ...
-func (gorealOp *GoRealOp) CloseConsumer() {
-	switch gorealOp.MBName {
+func (op *goRealOp) CloseConsumer() {
+	switch op.mbName {
 	case mb.PulsarMB:
-		gorealOp.PulsarOp.CloseConsumer()
+		op.pulsar.CloseConsumer()
 	default:
 		panic("unsupported sink")
 	}
