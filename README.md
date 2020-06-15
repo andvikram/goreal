@@ -70,10 +70,10 @@ Sample subscribe function:
 const ws = new WebSocket("ws://<GoReal_server_address>/subscribe");
 // ws is provided to the function 
 // so that it can be used to close on exit events
-function subscribe(ws, topicID, peer) {
+function subscribe(ws, topicID, peerID) {
   // This message format is required by GoReal
   // Subscription is given a name using peer
-  const msg = { topicID:  topicID, peer: peer };
+  const msg = { topicID:  topicID, peerID: peerID };
   ws.onopen = function () {
     console.log("WebSocket connection established with server");
     ws.send(JSON.stringify(msg));
