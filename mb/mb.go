@@ -49,3 +49,9 @@ func CloseMB() error {
 	}
 	return err
 }
+
+// InitVars ...
+func InitVars(mbName, mbURL string) {
+	MBName = mbName
+	MBUrl = mbURL
+}

@@ -37,7 +37,10 @@ func Start(env string) {
 	}
 
 	// Initiate service
-	initMBVars()
+	mb.InitVars(
+		configuration.Config.MessageBus,
+		configuration.Config.MessageBusURL,
+	)
 	service.Initialize()
 
 	servCon := make(chan struct{})
@@ -97,9 +100,4 @@ func shutdownServer() {
 			"error": err,
 		}).Error("Error shutting down server")
 	}
-}
-
-func initMBVars() {
-	mb.MBName = configuration.Config.MessageBus
-	mb.MBUrl = configuration.Config.MessageBusURL
 }
