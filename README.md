@@ -1,3 +1,6 @@
+[![Language](https://img.shields.io/badge/Language-Go-blue.svg)](https://golang.org/)
+[![LICENSE](https://img.shields.io/hexpm/l/pulsar.svg)](https://github.com/andvikram/goreal/blob/master/LICENSE)
+
 # GoReal
 
 An application to simplify PubSub using [Websocket](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API) and [Apache Pulsar](http://pulsar.apache.org)
