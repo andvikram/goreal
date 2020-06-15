@@ -77,18 +77,18 @@ func (rOp *Op) CloseProducer() {
 }
 
 // InitConsumer ...
-func (rOp *Op) InitConsumer(topicID, peer string) error {
+func (rOp *Op) InitConsumer(topicID, peerID string) error {
 	var err error
 	client := rOp.GoRealMB.PulsarMB
 	if consumer != nil {
-		if consumer.Subscription() == "subcriptionName-"+peer {
+		if consumer.Subscription() == "subcriptionName-"+peerID {
 			return nil
 		}
 		consumer = nil
 	}
 	consumer, err = client.Subscribe(pulsar.ConsumerOptions{
 		Topic:            topicID,
-		SubscriptionName: "subcriptionName-" + peer,
+		SubscriptionName: "subcriptionName-" + peerID,
 	})
 	return err
 }

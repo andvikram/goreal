@@ -62,7 +62,7 @@ func (gr *goReal) SubscribeTopic(ws *websocket.Conn) {
 		}).Error("Error unmarshalling JSON message")
 		return
 	}
-	if data["topicID"] == "" || data["peer"] == "" {
+	if data["topicID"] == "" || data["peerID"] == "" {
 		log.WithFields(logger.Fields{
 			"event":   "service.SubscribeTopic()",
 			"error":   "Parameter values not present",
@@ -71,7 +71,7 @@ func (gr *goReal) SubscribeTopic(ws *websocket.Conn) {
 		return
 	}
 
-	err = gr.op.InitConsumer(data["topicID"], data["peer"])
+	err = gr.op.InitConsumer(data["topicID"], data["peerID"])
 	defer gr.op.CloseConsumer()
 	if err != nil {
 		log.WithFields(logger.Fields{

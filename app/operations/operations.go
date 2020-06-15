@@ -81,10 +81,10 @@ func (op *goRealOp) CloseProducer() {
 }
 
 // InitConsumer ...
-func (op *goRealOp) InitConsumer(topicID, peer string) error {
+func (op *goRealOp) InitConsumer(topicID, peerID string) error {
 	switch op.mbName {
 	case mb.PulsarMB:
-		err = op.pulsar.InitConsumer(topicID, peer)
+		err = op.pulsar.InitConsumer(topicID, peerID)
 	default:
 		err = errors.New("unsupported sink")
 	}
