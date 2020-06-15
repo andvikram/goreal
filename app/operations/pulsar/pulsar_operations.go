@@ -89,7 +89,6 @@ func (rOp *Op) InitConsumer(topicID, peer string) error {
 	consumer, err = client.Subscribe(pulsar.ConsumerOptions{
 		Topic:            topicID,
 		SubscriptionName: "subcriptionName-" + peer,
-		Type:             pulsar.Shared,
 	})
 	return err
 }
