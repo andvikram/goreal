@@ -16,20 +16,14 @@ type Fields map[string]interface{}
 
 // GoRealLog ...
 type GoRealLog interface {
-	// Debug ...
-	Debug(message string)
-	// Debug ...
-	Info(message string)
-	// Debug ...
-	Warn(message string)
-	// Debug ...
-	Error(message string)
-	// Debug ...
-	Fatal(message string)
-	// Debug ...
-	Panic(message string)
 	// WithFields allows to add fields to logging
 	WithFields(Fields) GoRealLog
+	Debug(message string)
+	Info(message string)
+	Warn(message string)
+	Error(message string)
+	Fatal(message string)
+	Panic(message string)
 }
 
 type grLog struct {
