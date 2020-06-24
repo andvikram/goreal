@@ -28,7 +28,7 @@ func SubscribeTopic(w http.ResponseWriter, r *http.Request) {
 
 	ws, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		log.WithFields(logger.Fields{
+		logger.Log.WithFields(logger.Fields{
 			"event": "controller.SubscribeTopic()",
 			"error": err,
 		}).Error("Failed to upgrade connection to WebSocket")
@@ -49,7 +49,7 @@ func PublishToTopic(w http.ResponseWriter, r *http.Request) {
 	var body map[string]string
 	err := json.NewDecoder(r.Body).Decode(&body)
 	if err != nil {
-		log.WithFields(logger.Fields{
+		logger.Log.WithFields(logger.Fields{
 			"event": "controller.PublishToTopic()",
 			"error": err,
 		}).Error("Failed to unmarshal request body")

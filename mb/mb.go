@@ -20,7 +20,6 @@ var (
 	MBName string
 	// MBUrl ...
 	MBUrl string
-	log   = logger.GoRealLog{}
 	err   error
 )
 
@@ -32,7 +31,7 @@ func NewGoRealMB() *GoRealMB {
 		grmb.PulsarMB, err = NewPulsarMB(MBUrl)
 	}
 	if err != nil {
-		log.WithFields(logger.Fields{
+		logger.Log.WithFields(logger.Fields{
 			"event": "mb.NewGoRealMB()",
 			"error": err,
 		}).Fatal("Failed to get MB client")

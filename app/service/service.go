@@ -21,7 +21,6 @@ var (
 	GR GoRealService
 	// Discontinue receiving messages
 	Discontinue = false
-	log         = logger.GoRealLog{}
 	err         error
 )
 
@@ -47,7 +46,7 @@ func (gr *goReal) SubscribeTopic(ws *websocket.Conn) {
 	// Read the initial message to get info
 	_, JSONMessage, err := ws.ReadMessage()
 	if err != nil {
-		log.WithFields(logger.Fields{
+		logger.Log.WithFields(logger.Fields{
 			"event": "service.SubscribeTopic()",
 			"error": err,
 		}).Error("Error reading message from ws client")
@@ -56,14 +55,14 @@ func (gr *goReal) SubscribeTopic(ws *websocket.Conn) {
 	data := make(map[string]string)
 	err = json.Unmarshal([]byte(JSONMessage), &data)
 	if err != nil {
-		log.WithFields(logger.Fields{
+		logger.Log.WithFields(logger.Fields{
 			"event": "service.SubscribeTopic()",
 			"error": err,
 		}).Error("Error unmarshalling JSON message")
 		return
 	}
 	if data["topicID"] == "" || data["peerID"] == "" {
-		log.WithFields(logger.Fields{
+		logger.Log.WithFields(logger.Fields{
 			"event":   "service.SubscribeTopic()",
 			"error":   "Parameter values not present",
 			"message": data,
@@ -74,7 +73,7 @@ func (gr *goReal) SubscribeTopic(ws *websocket.Conn) {
 	err = gr.op.InitConsumer(data["topicID"], data["peerID"])
 	defer gr.op.CloseConsumer()
 	if err != nil {
-		log.WithFields(logger.Fields{
+		logger.Log.WithFields(logger.Fields{
 			"event": "service.SubscribeTopic()",
 			"error": err,
 		}).Error("Error initializing consumer")
@@ -85,7 +84,7 @@ func (gr *goReal) SubscribeTopic(ws *websocket.Conn) {
 		message, err := gr.op.Receive()
 		if err != nil {
 			if !Discontinue {
-				log.WithFields(logger.Fields{
+				logger.Log.WithFields(logger.Fields{
 					"event": "service.SubscribeTopic()",
 					"error": err,
 				}).Error("Error receiving message")
@@ -95,7 +94,7 @@ func (gr *goReal) SubscribeTopic(ws *websocket.Conn) {
 
 		err = ws.WriteJSON(message.Data)
 		if err != nil {
-			log.WithFields(logger.Fields{
+			logger.Log.WithFields(logger.Fields{
 				"event": "service.SubscribeTopic()",
 				"error": err,
 			}).Error("Error writing to WebSocket connection")
@@ -114,7 +113,7 @@ func (gr *goReal) PublishToTopic(req *api.PublishToTopicRequest) *api.PublishToT
 	err = gr.op.InitProducer(req.TopicID)
 	defer gr.op.CloseProducer()
 	if err != nil {
-		log.WithFields(logger.Fields{
+		logger.Log.WithFields(logger.Fields{
 			"event": "service.PublishToTopic()",
 			"error": err,
 		}).Error("Error initializing producer")
@@ -125,7 +124,7 @@ func (gr *goReal) PublishToTopic(req *api.PublishToTopicRequest) *api.PublishToT
 
 	err := gr.op.Send(message)
 	if err != nil {
-		log.WithFields(logger.Fields{
+		logger.Log.WithFields(logger.Fields{
 			"event": "service.PublishToTopic()",
 			"error": err,
 		}).Info("Failed to send message")

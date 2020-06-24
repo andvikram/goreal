@@ -16,7 +16,6 @@ import (
 
 var (
 	srv *http.Server
-	log = logger.GoRealLog{}
 	err error
 )
 
@@ -72,7 +71,7 @@ func Start(env string) {
 	}
 
 	if err != nil && err != http.ErrServerClosed {
-		log.WithFields(logger.Fields{
+		logger.Log.WithFields(logger.Fields{
 			"event": "server.Start()",
 			"error": err,
 		}).Error("Error starting server")
@@ -95,7 +94,7 @@ func shutdownServer() {
 	err := srv.Shutdown(context.Background())
 	if err != nil {
 		// Error from closing listeners, or context timeout:
-		log.WithFields(logger.Fields{
+		logger.Log.WithFields(logger.Fields{
 			"event": "server.Start()",
 			"error": err,
 		}).Error("Error shutting down server")

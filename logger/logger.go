@@ -6,19 +6,16 @@ import (
 	"os"
 	"sync"
 
-	log "github.com/sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 
 	"github.com/andvikram/goreal/configuration"
 )
 
-// Fields ...
+// Fields type is used to pass to `WithFields`
 type Fields map[string]interface{}
 
 // GoRealLog ...
-type GoRealLog struct{}
-
-// GoRealLogging ...
-type GoRealLogging interface {
+type GoRealLog interface {
 	// Debug ...
 	Debug(message string)
 	// Debug ...
@@ -32,7 +29,12 @@ type GoRealLogging interface {
 	// Debug ...
 	Panic(message string)
 	// WithFields allows to add fields to logging
-	WithFields(f Fields) *GoRealLog
+	WithFields(Fields) GoRealLog
+}
+
+type grLog struct {
+	logger *logrus.Logger
+	fields logrus.Fields
 }
 
 const (
@@ -41,22 +43,22 @@ const (
 )
 
 var (
-	logger       *log.Logger
-	logrusFields log.Fields
-	logDir       string
-	logFilePath  string
-	logFile      *os.File
-	env          string
-	err          error
-	once         sync.Once
-	pathSep      = string(os.PathSeparator)
+	// Log is instance for GoRealLog interface
+	Log         GoRealLog
+	logDir      string
+	logFilePath string
+	logFile     *os.File
+	env         string
+	err         error
+	once        sync.Once
+	pathSep     = string(os.PathSeparator)
 )
 
 // Start will initialize a new service level logger
 func Start(serviceEnv string) {
 	env = serviceEnv
 	once.Do(func() {
-		new()
+		Log = newLog()
 	})
 }
 
@@ -70,72 +72,76 @@ func Stop() error {
 }
 
 // Debug ...
-func (gorealLog *GoRealLog) Debug(message string) {
-	logger.WithFields(logrusFields).Debug(message)
+func (l *grLog) Debug(message string) {
+	l.logger.WithFields(l.fields).Debug(message)
 }
 
 // Info ...
-func (gorealLog *GoRealLog) Info(message string) {
-	logger.WithFields(logrusFields).Info(message)
+func (l *grLog) Info(message string) {
+	l.logger.WithFields(l.fields).Info(message)
 }
 
 // Warn ...
-func (gorealLog *GoRealLog) Warn(message string) {
-	logger.WithFields(logrusFields).Warn(message)
+func (l *grLog) Warn(message string) {
+	l.logger.WithFields(l.fields).Warn(message)
 }
 
 // Error ...
-func (gorealLog *GoRealLog) Error(message string) {
-	logger.WithFields(logrusFields).Error(message)
+func (l *grLog) Error(message string) {
+	l.logger.WithFields(l.fields).Error(message)
 }
 
 // Fatal ...
-func (gorealLog *GoRealLog) Fatal(message string) {
-	logger.WithFields(logrusFields).Fatal(message)
+func (l *grLog) Fatal(message string) {
+	l.logger.WithFields(l.fields).Fatal(message)
 }
 
 // Panic ...
-func (gorealLog *GoRealLog) Panic(message string) {
-	logger.WithFields(logrusFields).Panic(message)
+func (l *grLog) Panic(message string) {
+	l.logger.WithFields(l.fields).Panic(message)
 }
 
 // WithFields ...
-func (gorealLog *GoRealLog) WithFields(f Fields) *GoRealLog {
-	logrusFields = make(log.Fields, len(f))
+func (l *grLog) WithFields(f Fields) GoRealLog {
+	l.fields = make(logrus.Fields, len(f))
 	for k, v := range f {
-		logrusFields[k] = v
+		l.fields[k] = v
 	}
-	return gorealLog
+	return l
 }
 
-func new() {
+func newLog() GoRealLog {
 	config := configuration.Config
 	logFile, err = os.OpenFile(config.LogFilePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0755)
 	if err != nil {
-		log.Fatal("Cannot open file, error:", err)
+		logrus.Fatal("Cannot open file, error:", err)
 	}
 
-	logger = log.New()
+	l := new(grLog)
+
+	l.logger = logrus.New()
 
 	if env == configuration.DevEnv {
-		logger.Out = io.MultiWriter(os.Stdout, logFile)
+		l.logger.Out = io.MultiWriter(os.Stdout, logFile)
 	} else {
-		logger.Out = logFile
+		l.logger.Out = logFile
 	}
 
-	level, err := log.ParseLevel(config.LogLevel)
+	level, err := logrus.ParseLevel(config.LogLevel)
 	if err != nil {
-		level = log.InfoLevel
+		level = logrus.InfoLevel
 	}
-	logger.Level = level
+	l.logger.Level = level
 
 	timestampFormat := "2006-01-02 15:04:05.999Z07:00"
-	logger.Formatter = &log.TextFormatter{
+	l.logger.Formatter = &logrus.TextFormatter{
 		TimestampFormat: timestampFormat,
 	}
 	if env == configuration.ProdEnv {
-		logger.Formatter = &log.JSONFormatter{
+		l.logger.Formatter = &logrus.JSONFormatter{
 			TimestampFormat: timestampFormat,
 		}
 	}
+
+	return l
 }
